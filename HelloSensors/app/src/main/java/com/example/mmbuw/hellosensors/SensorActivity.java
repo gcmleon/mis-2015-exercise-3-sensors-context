@@ -7,14 +7,22 @@ import android.hardware.SensorEventListener;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 
 
 public class SensorActivity extends Activity implements SensorEventListener {
 
+    AccelerometerView accelerometerView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_sensor);
+
+        accelerometerView = (AccelerometerView) findViewById(R.id.accelerometer);
+        // not necessary?
+        //accelerometerView.invalidate();
     }
 
     @Override
