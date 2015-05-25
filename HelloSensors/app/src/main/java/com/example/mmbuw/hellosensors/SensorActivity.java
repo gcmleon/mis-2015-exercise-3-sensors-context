@@ -1,18 +1,24 @@
 package com.example.mmbuw.hellosensors;
 
 import android.app.Activity;
+import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 
+import static android.util.FloatMath.sqrt;
+
 
 public class SensorActivity extends Activity implements SensorEventListener {
 
     AccelerometerView accelerometerView;
+    private SensorManager mySensorManager;
+    private Sensor accelerometer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,9 +26,18 @@ public class SensorActivity extends Activity implements SensorEventListener {
 
         setContentView(R.layout.activity_sensor);
 
+        mySensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+
+        accelerometer = mySensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        // Sensor.TYPE_LINEAR_ACCELERATION, excluding gravity
+
+        mySensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+
         accelerometerView = (AccelerometerView) findViewById(R.id.accelerometer);
         // not necessary?
         //accelerometerView.invalidate();
+
+        //  For task 3: http://developer.android.com/samples/wearable.html
     }
 
     @Override
@@ -50,6 +65,26 @@ public class SensorActivity extends Activity implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent event) {
 
+        Sensor sensor = event.sensor;
+        float x_axis, y_axis, z_axis, magnitude;
+
+        // http://developer.android.com/reference/android/hardware/SensorEvent.html#values
+        if (sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+
+            // m/s^2 units
+            x_axis = event.values[0]; // (all including gravity)
+            y_axis = event.values[1];
+            z_axis = event.values[2];
+            magnitude = sqrt(x_axis * x_axis + y_axis * y_axis + z_axis * z_axis);
+            System.out.println("Magnitude: " + magnitude);
+
+            // http://examples.javacodegeeks.com/android/core/hardware/sensor/android-accelerometer-example/#code
+
+            // add to view!
+            accelerometerView.updateValues(x_axis, y_axis, z_axis);
+
+
+        }
     }
 
     @Override

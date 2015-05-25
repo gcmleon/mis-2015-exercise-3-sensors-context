@@ -14,6 +14,8 @@ import android.view.MenuItem;
 import static android.util.FloatMath.sqrt;
 
 public class FirstActivity extends Activity implements SensorEventListener {
+
+    AccelerometerView accelerometerView;
     private SensorManager mySensorManager;
     private  Sensor Accelerometer;
 
@@ -25,6 +27,8 @@ public class FirstActivity extends Activity implements SensorEventListener {
         mySensorManager=(SensorManager)getSystemService(Context.SENSOR_SERVICE);
         Accelerometer=mySensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mySensorManager.registerListener(this, Accelerometer,SensorManager.SENSOR_DELAY_NORMAL);
+
+        accelerometerView = (AccelerometerView) findViewById(R.id.accelerometer);
 
     }
 
@@ -53,16 +57,26 @@ public class FirstActivity extends Activity implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent event) {
 
-        Sensor mySensor =event.sensor;
-        if (mySensor.getType()==Sensor.TYPE_ACCELEROMETER){
-        
-        float X_Direction = event.values[0];
-        float Y_Direction = event.values[1];
-        float Z_Direction = event.values[2];
-        float Magnitude = sqrt(X_Direction * X_Direction + Y_Direction * Y_Direction + Z_Direction * Z_Direction);
-        System.out.print("Magnitude:");
-        System.out.println(Magnitude);}
+        Sensor sensor = event.sensor;
+        float x_axis, y_axis, z_axis, magnitude;
 
+        // http://developer.android.com/reference/android/hardware/SensorEvent.html#values
+        if (sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+
+            // m/s^2 units
+            x_axis = event.values[0]; // (all including gravity)
+            y_axis = event.values[1];
+            z_axis = event.values[2];
+            magnitude = sqrt(x_axis * x_axis + y_axis * y_axis + z_axis * z_axis);
+            System.out.println("Magnitude: " + magnitude);
+
+            // http://examples.javacodegeeks.com/android/core/hardware/sensor/android-accelerometer-example/#code
+
+            // add to view!
+            accelerometerView.updateValues(x_axis, y_axis, z_axis);
+
+
+        }
     }
 
     @Override

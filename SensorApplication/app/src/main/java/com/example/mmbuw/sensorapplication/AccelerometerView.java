@@ -1,4 +1,4 @@
-package com.example.mmbuw.hellosensors;
+package com.example.mmbuw.sensorapplication;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -184,11 +184,11 @@ public class AccelerometerView extends LinearLayout {
         System.out.println("New Magnitude: " + magnitude);
 
         acc_values = new float[]{0.0f, contentHeight - prev_x_value,
-                                 100.0f, contentHeight - x_value,
-                                 0.0f, contentHeight - prev_y_value,
-                                 100.0f, contentHeight - y_value,
-                                 0.0f, contentHeight - prev_z_value,
-                                 100.0f, contentHeight - z_value};
+                100.0f, contentHeight - x_value,
+                0.0f, contentHeight - prev_y_value,
+                100.0f, contentHeight - y_value,
+                0.0f, contentHeight - prev_z_value,
+                100.0f, contentHeight - z_value};
 
         System.out.println("First line, point_0 = (" + 0.0f + ", " + prev_x_value + ")");
         System.out.println("First line, point_1 = (" + 100.0f + ", " + x_value + ")");
