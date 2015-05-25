@@ -152,9 +152,9 @@ public class AccelerometerView extends LinearLayout {
         //canvas.drawLine(current_pixel, contentHeight - prev_x_pixels, next_pixel, contentHeight - x_pixels, paint);
 
         // if there's "out of bounds", i < it_values + 1
-        for (int i = 0; i <= it_values + 1; i ++) {
-            canvas.drawLine(i, contentHeight - acc_x_values[it_values],
-                    i + 1, contentHeight - acc_x_values[it_values + 1], paint);
+        for (int i = 0; i < it_values + 1; i ++) {
+            canvas.drawLine(i, contentHeight - acc_x_values[i],
+                    i + 1, contentHeight - acc_x_values[i + 1], paint);
         }
 
         // contentHeight/2 because i'm assuming that magnitude 0 is in the middle of the screen view
@@ -166,27 +166,27 @@ public class AccelerometerView extends LinearLayout {
         // Y-axis acceleration
         paint.setColor(yColor); // 9.77622
 
-        for (int i = 0; i <= it_values + 1; i ++) {
-            canvas.drawLine(i, contentHeight - acc_y_values[it_values],
-                    i + 1, contentHeight - acc_y_values[it_values + 1], paint);
+        for (int i = 0; i < it_values + 1; i ++) {
+            canvas.drawLine(i, contentHeight - acc_y_values[i],
+                    i + 1, contentHeight - acc_y_values[i + 1], paint);
         }
         //canvas.drawLine(paddingLeft, contentHeight - prev_y_pixels, paddingLeft + contentWidth, contentHeight - y_pixels, paint);
 
         // Z-axis acceleration
         paint.setColor(zColor); // 0.81
 
-        for (int i = 0; i <= it_values + 1; i ++) {
-            canvas.drawLine(i, contentHeight - acc_z_values[it_values],
-                    i + 1, contentHeight - acc_z_values[it_values + 1], paint);
+        for (int i = 0; i < it_values + 1; i ++) {
+            canvas.drawLine(i, contentHeight - acc_z_values[i],
+                    i + 1, contentHeight - acc_z_values[i + 1], paint);
         }
         //canvas.drawLine(paddingLeft, contentHeight - prev_z_pixels, paddingLeft + contentWidth, contentHeight - z_pixels, paint);
 
         // Magnitude
         paint.setColor(mColor); // New Magnitude: 96.23613 - very high in comparison to the others!
 
-        for (int i = 0; i <= it_values + 1; i ++) {
-            canvas.drawLine(i, contentHeight - acc_m_values[it_values],
-                    i + 1, contentHeight - acc_m_values[it_values + 1], paint);
+        for (int i = 0; i < it_values + 1; i ++) {
+            canvas.drawLine(i, contentHeight - acc_m_values[i],
+                    i + 1, contentHeight - acc_m_values[i + 1], paint);
         }
         //canvas.drawLine(paddingLeft, contentHeight - prev_m_pixels, paddingLeft + contentWidth, contentHeight - m_pixels, paint);
         //canvas.drawLines(new float[]{0.0f, 0.0f, getWidth(), getHeight()}, paint);

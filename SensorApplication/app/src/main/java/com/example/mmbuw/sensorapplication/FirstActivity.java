@@ -20,7 +20,16 @@ public class FirstActivity extends Activity implements SensorEventListener {
     private Sensor accelerometer;
 
     AccelerometerView accelerometerView;
+    FFTView fftView;
     SeekBar seekBarRate;
+
+
+    public int userInput= 16; //value set with seekBarFFT
+    private int n = (int) Math.pow(userInput, 2);
+    private double[] y_input = fill_Y_array(n);
+    private double x_input;
+    private double[] magnitudeOverTime;
+    FFT mFFT = new FFT(n);
 
     int defaultRate = 200000; // SENSOR_DELAY_NORMAL
 
@@ -39,7 +48,7 @@ public class FirstActivity extends Activity implements SensorEventListener {
         mySensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 
         accelerometerView = (AccelerometerView) findViewById(R.id.accelerometer);
-
+        fftView = (FFTView) findViewById(R.id.fft);
         seekBarRate = (SeekBar) findViewById(R.id.seekBar);
         seekBarRate.setMax(defaultRate);
         seekBarRate.setProgress(defaultRate);
@@ -126,5 +135,14 @@ public class FirstActivity extends Activity implements SensorEventListener {
 
         mySensorManager.unregisterListener(this, accelerometer);
         mySensorManager.registerListener(this, accelerometer, microseconds);
+    }
+
+    public double[] fill_Y_array (int n){
+        double[] y_input;
+        y_input = new double[n];
+        for (int i = 0; i < n; i++){
+            y_input[i] = 0;
+        }
+        return y_input;
     }
 }

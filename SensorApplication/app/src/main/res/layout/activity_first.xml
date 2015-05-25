@@ -1,23 +1,52 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
     android:layout_height="match_parent" android:paddingLeft="16dp"
     android:paddingRight="16dp"
     android:paddingTop="16dp"
     android:paddingBottom="16dp" tools:context=".FirstActivity"
     android:id="@+id/main_activity">
-
-    <com.example.mmbuw.sensorapplication.AccelerometerView
-        android:id="@+id/accelerometer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_above="@+id/seekBarFFT"
         android:layout_below="@+id/seekBar">
-    </com.example.mmbuw.sensorapplication.AccelerometerView>
+
+        <com.example.mmbuw.sensorapplication.AccelerometerView
+            android:id="@+id/accelerometer"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_weight="1">
+        </com.example.mmbuw.sensorapplication.AccelerometerView>
+
+        <com.example.mmbuw.sensorapplication.FFTView
+            android:id="@+id/fft"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            >
+        </com.example.mmbuw.sensorapplication.FFTView>
+    </LinearLayout>
 
     <SeekBar
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/seekBar"
+        android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentStart="true" />
 
+    <SeekBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/seekBarFFT"
+        android:layout_gravity="bottom"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true"
+        />
+
 </RelativeLayout>
+
