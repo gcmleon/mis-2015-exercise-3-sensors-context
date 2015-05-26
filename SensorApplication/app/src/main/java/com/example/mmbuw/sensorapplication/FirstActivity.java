@@ -27,7 +27,7 @@ public class FirstActivity extends Activity implements SensorEventListener {
 
 
     int defaultRate = 200000; // SENSOR_DELAY_NORMAL
-
+    int defaultFFT =12; // initial number of N
 
     @Override
     protected void onResume() {
@@ -59,9 +59,10 @@ public class FirstActivity extends Activity implements SensorEventListener {
         seekBarRate = (SeekBar) findViewById(R.id.seekBar);
         seekBarFFT_n = (SeekBar) findViewById(R.id.seekBarFFT);
         seekBarRate.setMax(defaultRate);
-        seekBarFFT_n.setMax(12);
+        seekBarFFT_n.setMax(defaultFFT);
         seekBarRate.setProgress(defaultRate);
-        seekBarFFT_n.setProgress(12);
+        seekBarFFT_n.setProgress(defaultFFT);
+        fftView.initialize(defaultFFT);
 
         seekBarRate.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -92,7 +93,7 @@ public class FirstActivity extends Activity implements SensorEventListener {
                 }
                 n = ((int) Math.pow(2, progress));
                 System.out.println("FFT window size progress changed to: " + n);
-                FFTView.updateFFT_n(n);
+               // FFTView.updateFFT_n(n);
             }
 
             @Override

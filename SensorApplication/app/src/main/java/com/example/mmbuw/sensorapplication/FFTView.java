@@ -23,10 +23,15 @@ public class FFTView extends LinearLayout {
     private Drawable mExampleDrawable;
     private Paint paint;
     private int mColor = Color.WHITE;
-
-    private static double[] magnitudeOverTime;
+    FFT mFFT;
+    private  double[] magnitudeOverTime;
+    private  double[] x, y;
+    double [] FFT_magnitude;
+    private int it_x;
+    private int [] fft_m_values;
     private float magnitude, current_magnitude;
     private int counter = 0;
+    private boolean widthSet = false;
 
 
 
@@ -41,6 +46,7 @@ public class FFTView extends LinearLayout {
         int y = 20;
         int width = 150;
         int height = 25;
+
         paint = new Paint();
         mExampleDrawable = new ShapeDrawable(new OvalShape());
         mExampleDrawable.setColorFilter(mColor, PorterDuff.Mode.DARKEN);
@@ -79,7 +85,7 @@ public class FFTView extends LinearLayout {
     protected void refreshMagnitudeArr (float magnitude) {
 
       current_magnitude = magnitude;
-        if (counter < 240) {
+        if (counter <24 ) {
             counter ++;
             magnitudeOverTime[counter]= current_magnitude;
         }
@@ -89,7 +95,7 @@ public class FFTView extends LinearLayout {
     }
 
 
-    public static void updateFFT_n(int progress) {
+    public  void updateFFT_n(int progress) {
 
 
        // int n =  (int) Math.pow(progress, 2);
@@ -114,9 +120,23 @@ public class FFTView extends LinearLayout {
     }
 
 
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        if (!widthSet){
+            it_x =0;
+            fft_m_values = new int[w];
+            widthSet=true;
+        }
+    }
+
     public void updateMagnitude(float magnitude) {
-        this.magnitude = magnitude;
-        refreshMagnitudeArr(magnitude);
+
+        x[it_x]=  magnitude;
+        mFFT.fft(x,y);
+        FFT_magnitude = calculateFFT_absolute(x,y,x.length);
+        this.invalidate();
+        //increment it_x after draw
 
     }
 
@@ -130,5 +150,34 @@ public class FFTView extends LinearLayout {
         }
 
         return absoluteFFT;
+    }
+
+    public void initialize (int n){
+        double [] x_initial =  new double[n];
+        double []  y_initial = new double[n];
+        mFFT = new FFT(n);
+        //initial input arrays
+        for (int i = 0; i < n; i++){
+            y_initial[i] = 0;
+            x_initial[i] = 0;
+        }
+
+       x = x_initial;
+       y = y_initial;
+
+    }
+
+    // Part of class implemented by Ankit Srivastava - <URL>?
+    // pixels = contentHeight
+    // min = minimum value possible (could be negative)
+    // max = maximum value possible (could be negative)
+    // value = to be converted
+
+    private int toPixelIntFFT(float pixels, float min, float max, float value) {
+        double p;
+        int pint;
+        p = .1 * pixels + ((value-min)/(max-min)) * .8 * pixels;
+        pint = (int) p;
+        return (pint);
     }
 }
