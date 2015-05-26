@@ -12,10 +12,8 @@ import android.util.AttributeSet;
 import android.widget.LinearLayout;
 
 
-
-
 /**
- * TODO: document your custom view class.
+ * Custom view to show  FFT magnitude plotted
  */
 public class FFTView extends LinearLayout {
 
@@ -39,8 +37,8 @@ public class FFTView extends LinearLayout {
         super(context, attrs);
 
 
-        // holds max number n^2 current of magnitude values
-        magnitudeOverTime = new double[1024];
+        // holds max number 2^n current of magnitude values
+        magnitudeOverTime = new double[4096];
 
         int x = 20;
         int y = 20;
@@ -95,7 +93,7 @@ public class FFTView extends LinearLayout {
     }
 
 
-    public  void updateFFT_n(int progress) {
+   /* public  void updateFFT_n(int progress) {
 
 
        // int n =  (int) Math.pow(progress, 2);
@@ -117,14 +115,14 @@ public class FFTView extends LinearLayout {
         mFFT.fft(x_input,y_input);
        // FFTmagnitude = calculateFFT_absolute(x_input, y_input,n);
 
-    }
+    } */
 
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         if (!widthSet){
-            it_x =0;
+            it_x =1;
             fft_m_values = new int[w];
             widthSet=true;
         }

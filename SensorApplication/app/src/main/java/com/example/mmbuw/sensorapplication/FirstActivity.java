@@ -62,7 +62,7 @@ public class FirstActivity extends Activity implements SensorEventListener {
         seekBarFFT_n.setMax(defaultFFT);
         seekBarRate.setProgress(defaultRate);
         seekBarFFT_n.setProgress(defaultFFT);
-        fftView.initialize(defaultFFT);
+        fftView.initialize(32); //value must be a power of 2
 
         seekBarRate.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -85,8 +85,8 @@ public class FirstActivity extends Activity implements SensorEventListener {
         seekBarFFT_n.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                int n;
-                if (progress<5) {
+               int n;
+               if (progress<5) {
 
                     seekBar.setProgress(5);
                   //  n = ((int) Math.pow(2, progress));
