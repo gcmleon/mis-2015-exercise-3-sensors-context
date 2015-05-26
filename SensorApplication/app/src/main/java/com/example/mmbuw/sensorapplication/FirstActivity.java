@@ -30,6 +30,18 @@ public class FirstActivity extends Activity implements SensorEventListener {
 
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        mySensorManager.registerListener(this, accelerometer, seekBarRate.getProgress());
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mySensorManager.unregisterListener(this, accelerometer);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_first);
