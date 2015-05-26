@@ -21,6 +21,7 @@ public class SensorActivity extends Activity implements SensorEventListener {
     private Sensor accelerometer;
 
     AccelerometerView accelerometerView;
+    FFTView fftView;
     SeekBar seekBarRate;
 
     int defaultRate = 200000; // SENSOR_DELAY_NORMAL
@@ -40,6 +41,8 @@ public class SensorActivity extends Activity implements SensorEventListener {
         mySensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_FASTEST);
 
         accelerometerView = (AccelerometerView) findViewById(R.id.accelerometer);
+
+        fftView = (FFTView) findViewById(R.id.fft);
 
         seekBarRate = (SeekBar) findViewById(R.id.seekBar);
         seekBarRate.setMax(defaultRate);
@@ -67,6 +70,18 @@ public class SensorActivity extends Activity implements SensorEventListener {
         //accelerometerView.invalidate();
 
         //  For task 3: http://developer.android.com/samples/wearable.html
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mySensorManager.registerListener(this, accelerometer, seekBarRate.getProgress());
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mySensorManager.unregisterListener(this, accelerometer);
     }
 
     @Override
