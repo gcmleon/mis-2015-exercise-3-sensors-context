@@ -19,7 +19,6 @@ import static android.util.FloatMath.sqrt;
 public class AccelerometerView extends LinearLayout {
 
     private Paint paint;
-    private Drawable mExampleDrawable;
     private int xColor = Color.RED;
     private int yColor = Color.GREEN;
     private int zColor = Color.BLUE;
@@ -30,7 +29,7 @@ public class AccelerometerView extends LinearLayout {
     private float prev_x_value, prev_y_value, prev_z_value;
     private float magnitude, prev_magnitude;
     private float min_value_axis, max_value_axis; // Y-axis in plot
-    private int current_pixel, next_pixel, epsilon;
+    private int current_pixel, next_pixel;
     private int paddingLeft, paddingTop, paddingRight, paddingBottom;
     private int contentWidth, contentHeight;
     private boolean widthSet = false;
@@ -52,15 +51,6 @@ public class AccelerometerView extends LinearLayout {
         current_pixel = paddingLeft;
         next_pixel = current_pixel + 1;
 
-        int x = 20;
-        int y = 20;
-        int width = 300;
-        int height = 50;
-
-        mExampleDrawable = new ShapeDrawable(new OvalShape());
-        mExampleDrawable.setColorFilter(xColor, PorterDuff.Mode.DARKEN);
-        mExampleDrawable.setBounds(x, y, x + width, y + height);
-
         this.setWillNotDraw(false);
     }
 
@@ -77,8 +67,6 @@ public class AccelerometerView extends LinearLayout {
             widthSet = true;
         }
 
-        //System.out.println("onSizeChanged - New Width is  " + w + " ***********************************************");
-        //System.out.println("onSizeChanged - New Height is  " + h + " ***********************************************");
     }
 
     @Override
@@ -102,7 +90,6 @@ public class AccelerometerView extends LinearLayout {
             next_pixel = current_pixel + 1;
         }
 
-        // repetitive?
         int prev_x_pixels = toPixelInt(contentHeight, min_value_axis, max_value_axis, prev_x_value);
         int prev_y_pixels = toPixelInt(contentHeight, min_value_axis, max_value_axis, prev_y_value);
         int prev_z_pixels = toPixelInt(contentHeight, min_value_axis, max_value_axis, prev_z_value);
@@ -127,41 +114,21 @@ public class AccelerometerView extends LinearLayout {
         paint.setStrokeWidth(2.0f);
         canvas.drawARGB(255, 0, 0, 0);
 
-        // Trying to draw a shape
-        /*mExampleDrawable.draw(canvas);
-        System.out.println("I drew the oval shape!");*/
-        /*canvas.drawRect(paddingLeft, paddingTop,
-                        paddingLeft + contentWidth,
-                        paddingTop + contentHeight,
-                        paint);
-        System.out.println("I drew the rectangle!");*/
-
         // Drawing plot axes
         paint.setColor(Color.YELLOW);
         // Magnitude in Y axis
         canvas.drawLine(paddingLeft + 1, paddingTop, paddingLeft + 1, contentHeight, paint);
         // Time in X axis
         canvas.drawLine(paddingLeft, paddingTop, contentWidth, paddingTop, paint);
-        // canvas.drawLine(20, 0, 0, 20, paint); // test
 
         // Drawing x-axis acceleration
         paint.setColor(xColor); // 0.0
-
-        // a difference of one pixel may be too small
-        // it erases the previous lines, how to keep them?
-        //canvas.drawLine(current_pixel, contentHeight - prev_x_pixels, next_pixel, contentHeight - x_pixels, paint);
 
         // if there's "out of bounds", i < it_values + 1
         for (int i = 0; i < it_values + 1; i ++) {
             canvas.drawLine(i, contentHeight - acc_x_values[i],
                     i + 1, contentHeight - acc_x_values[i + 1], paint);
         }
-
-        // contentHeight/2 because i'm assuming that magnitude 0 is in the middle of the screen view
-        //canvas.drawLine(paddingLeft, contentHeight/2 - prev_x_value, paddingLeft + contentWidth, contentHeight/2 - x_value, paint);
-        //canvas.drawLine(paddingLeft, paddingTop + contentHeight/4, paddingLeft + contentWidth, paddingTop + contentHeight/4, paint);
-        /*System.out.println("In red: (" + paddingLeft + ", " + (paddingTop + contentHeight/4)
-                                    + ") to (" + (paddingLeft + contentWidth) + ", " + (paddingTop + contentHeight/4));*/
 
         // Y-axis acceleration
         paint.setColor(yColor); // 9.77622
@@ -170,7 +137,6 @@ public class AccelerometerView extends LinearLayout {
             canvas.drawLine(i, contentHeight - acc_y_values[i],
                     i + 1, contentHeight - acc_y_values[i + 1], paint);
         }
-        //canvas.drawLine(paddingLeft, contentHeight - prev_y_pixels, paddingLeft + contentWidth, contentHeight - y_pixels, paint);
 
         // Z-axis acceleration
         paint.setColor(zColor); // 0.81
@@ -179,17 +145,14 @@ public class AccelerometerView extends LinearLayout {
             canvas.drawLine(i, contentHeight - acc_z_values[i],
                     i + 1, contentHeight - acc_z_values[i + 1], paint);
         }
-        //canvas.drawLine(paddingLeft, contentHeight - prev_z_pixels, paddingLeft + contentWidth, contentHeight - z_pixels, paint);
 
         // Magnitude
-        paint.setColor(mColor); // New Magnitude: 96.23613 - very high in comparison to the others!
+        paint.setColor(mColor);
 
         for (int i = 0; i < it_values + 1; i ++) {
             canvas.drawLine(i, contentHeight - acc_m_values[i],
                     i + 1, contentHeight - acc_m_values[i + 1], paint);
         }
-        //canvas.drawLine(paddingLeft, contentHeight - prev_m_pixels, paddingLeft + contentWidth, contentHeight - m_pixels, paint);
-        //canvas.drawLines(new float[]{0.0f, 0.0f, getWidth(), getHeight()}, paint);
 
     }
 
@@ -215,20 +178,6 @@ public class AccelerometerView extends LinearLayout {
         z_value = z_axis;
         magnitude = sqrt(x_value * x_value + y_value * y_value + z_value * z_value);
 
-        /*System.out.println("New X: " + x_value);
-        System.out.println("New Y: " + y_value);
-        System.out.println("New Z: " + z_value);
-        System.out.println("New Magnitude: " + magnitude);*/
-
-        System.out.println("First line, point_0 = (" + 0.0f + ", " + prev_x_value + ")");
-        System.out.println("First line, point_1 = (" + 100.0f + ", " + x_value + ")");
-
-        System.out.println("Second line, point_0 = (" + 0.0f + ", " + prev_y_value + ")");
-        System.out.println("Second line, point_1 = (" + 100.0f + ", " + y_value + ")");
-
-        System.out.println("Third line, point_0 = (" + 0.0f + ", " + prev_z_value + ")");
-        System.out.println("Third line, point_1 = (" + 100.0f + ", " + z_value + ")");
-
         this.invalidate();
 
     }
@@ -242,11 +191,12 @@ public class AccelerometerView extends LinearLayout {
         prev_magnitude = prev_m;
     }
 
-    // Part of class implemented by Ankit Srivastava - <URL>?
-    // pixels = contentHeight
-    // min = minimum value possible (could be negative)
-    // max = maximum value possible (could be negative)
-    // value = to be converted
+    /* Part of class implemented by Ankit Srivastava
+     http://www.ankitsrivastava.net/2012/03/a-simple-2d-plot-class-for-android/
+     pixels = contentHeight
+     min = minimum value possible (could be negative)
+     max = maximum value possible (could be negative)
+     value = to be converted */
     private int toPixelInt(float pixels, float min, float max, float value) {
         double p;
         int pint;

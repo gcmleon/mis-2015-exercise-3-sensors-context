@@ -2,6 +2,7 @@ package com.example.mmbuw.sensorapplication;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -24,10 +25,9 @@ public class FirstActivity extends Activity implements SensorEventListener {
     SeekBar seekBarRate;
     SeekBar seekBarFFT_n;
 
-
-
     int defaultRate = 200000; // SENSOR_DELAY_NORMAL
-    int defaultFFT =12; // initial number of N
+    int defaultFFT = 9;
+    int fftCounter = 0;
 
     @Override
     protected void onResume() {
@@ -55,14 +55,16 @@ public class FirstActivity extends Activity implements SensorEventListener {
         mySensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 
         accelerometerView = (AccelerometerView) findViewById(R.id.accelerometer);
-        fftView = (FFTView) findViewById(R.id.fft);
         seekBarRate = (SeekBar) findViewById(R.id.seekBar);
-        seekBarFFT_n = (SeekBar) findViewById(R.id.seekBarFFT);
         seekBarRate.setMax(defaultRate);
-        seekBarFFT_n.setMax(defaultFFT);
         seekBarRate.setProgress(defaultRate);
+
+        fftView = (FFTView) findViewById(R.id.fft);
+        seekBarFFT_n = (SeekBar) findViewById(R.id.seekBarFFT);
+        seekBarFFT_n.setMax(defaultFFT);
         seekBarFFT_n.setProgress(defaultFFT);
-        fftView.initialize(32); //value must be a power of 2
+        fftView.initialize((int) Math.pow(2, defaultFFT)); //value must be a power of 2
+        System.out.println("I initialized the fftView");
 
         seekBarRate.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -79,21 +81,14 @@ public class FirstActivity extends Activity implements SensorEventListener {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
 
+
             }
         });
 
         seekBarFFT_n.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-               int n;
-               if (progress<5) {
 
-                    seekBar.setProgress(5);
-                  //  n = ((int) Math.pow(2, progress));
-                }
-                n = ((int) Math.pow(2, progress));
-                System.out.println("FFT window size progress changed to: " + n);
-               // FFTView.updateFFT_n(n);
             }
 
             @Override
@@ -104,11 +99,20 @@ public class FirstActivity extends Activity implements SensorEventListener {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
 
+                int n;
+                if (seekBar.getProgress()<5) {
+                    n = (int) Math.pow(2, 5);
+                } else {
+                    n = (int) Math.pow(2, seekBar.getProgress());
+                }
+                System.out.println("FFT window size progress changed to: " + n);
+                fftView.initialize(n);
             }
         });
-        //accelerometerView.invalidate();        // not necessary?
 
-        //  For task 3: http://developer.android.com/samples/wearable.html
+        // Start background service to recognize activity
+        Intent intent = new Intent(this, ContextService.class);
+        startService(intent);
     }
 
     @Override
@@ -150,6 +154,7 @@ public class FirstActivity extends Activity implements SensorEventListener {
             // http://examples.javacodegeeks.com/android/core/hardware/sensor/android-accelerometer-example/#code
             // add to view!
             accelerometerView.updateValues(x_axis, y_axis, z_axis);
+
             fftView.updateMagnitude(magnitude);
         }
     }

@@ -11,46 +11,36 @@ import android.graphics.drawable.shapes.OvalShape;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
 
+import java.util.Arrays;
+
 
 /**
  * Custom view to show  FFT magnitude plotted
  */
 public class FFTView extends LinearLayout {
 
-
-    private Drawable mExampleDrawable;
     private Paint paint;
     private int mColor = Color.WHITE;
     FFT mFFT;
-    private  double[] magnitudeOverTime;
     private  double[] x, y;
-    double [] FFT_magnitude;
+    float [] FFT_magnitude; // magnitude array of FFT, used for plot
     private int it_x;
     private int [] fft_m_values;
-    private float magnitude, current_magnitude;
     private int counter = 0;
     private boolean widthSet = false;
-
+    private float min_value_axis, max_value_axis;
+    private int contentHeight;
 
 
     public FFTView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-
         // holds max number 2^n current of magnitude values
-        magnitudeOverTime = new double[4096];
-
-        int x = 20;
-        int y = 20;
-        int width = 150;
-        int height = 25;
-
+        min_value_axis = 0.0f;
+        max_value_axis = 0.0f;
         paint = new Paint();
-        mExampleDrawable = new ShapeDrawable(new OvalShape());
-        mExampleDrawable.setColorFilter(mColor, PorterDuff.Mode.DARKEN);
-        mExampleDrawable.setBounds(x, y, x + width, y + height);
-
         this.setWillNotDraw(false);
+        widthSet = false;
     }
 
 
@@ -58,118 +48,119 @@ public class FFTView extends LinearLayout {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        // TODO: consider storing these as member variables to reduce
-        // allocations per draw cycle.
-        int paddingLeft = getPaddingLeft();
-        int paddingTop = getPaddingTop();
-        int paddingRight = getPaddingRight();
-        int paddingBottom = getPaddingBottom();
+        if (!widthSet) return;
 
-        int contentWidth = getWidth() - paddingLeft - paddingRight;
-        int contentHeight = getHeight() - paddingTop - paddingBottom;
+        int n = x.length;
+        contentHeight = getHeight() - getPaddingTop() - getPaddingBottom();
 
+        int[] pixel_values = new int[n];
 
+        float[] magnitude_copy = Arrays.copyOfRange(FFT_magnitude, 0, n);
 
-        // Draw the example drawable on top of the text.
-        if (mExampleDrawable != null) {
-            mExampleDrawable.setBounds(paddingLeft, paddingTop,
-                    paddingLeft + contentWidth, paddingTop + contentHeight);
-            mExampleDrawable.draw(canvas);
+        Arrays.sort(magnitude_copy);
+        float min_value = magnitude_copy[0];
+        float max_value = magnitude_copy[n-1];
+        int range = (int) (max_value - min_value);
+        min_value_axis = 0;
+        max_value_axis = range;
+
+        // transforming our plot values to pixels
+        for (int i = 0; i < n; i++) {
+            pixel_values[i] = toPixelIntFFT(contentHeight, min_value_axis, max_value_axis, FFT_magnitude[i]);
+        }
+
+       // Plot
+        paint.setStrokeWidth(2.0f);
+        canvas.drawARGB(255, 255, 255, 255);
+
+        paint.setColor(Color.BLACK);
+
+        // drawing pixel by pixel
+        for (int i = 1; i < n; i++) {
+            canvas.drawLine(i, contentHeight - FFT_magnitude[i - 1],
+                    i + 1, contentHeight - FFT_magnitude[i], paint);
         }
     }
-
-
-
-    protected void refreshMagnitudeArr (float magnitude) {
-
-      current_magnitude = magnitude;
-        if (counter <24 ) {
-            counter ++;
-            magnitudeOverTime[counter]= current_magnitude;
-        }
-        else{
-            counter = 0;
-        }
-    }
-
-
-   /* public  void updateFFT_n(int progress) {
-
-
-       // int n =  (int) Math.pow(progress, 2);
-        int n = progress;
-        double[] FFTmagnitude;
-        System.out.print("FFT --->" +n);
-
-        FFT mFFT = new FFT(n);
-        FFTmagnitude = new double[n];
-        double[] x_input, y_input;
-
-        x_input = new double [n];
-        y_input = new double[n];
-        for (int i = 0; i < n; i++){
-            y_input[i] = 0;
-            x_input[i] = magnitudeOverTime[i]; //x_input either copy or sunset of magnitudeOverTimes
-        }
-
-        mFFT.fft(x_input,y_input);
-       // FFTmagnitude = calculateFFT_absolute(x_input, y_input,n);
-
-    } */
 
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         if (!widthSet){
-            it_x =1;
             fft_m_values = new int[w];
-            widthSet=true;
+            it_x = 0;
+            widthSet = true;
         }
     }
 
-    public void updateMagnitude(float magnitude) {
+    public void updateMagnitude(double magnitude) {
 
-        x[it_x]=  magnitude;
-        mFFT.fft(x,y);
-        FFT_magnitude = calculateFFT_absolute(x,y,x.length);
-        this.invalidate();
-        //increment it_x after draw
+        if (!widthSet) {
+            System.out.println("width is zero");
+            return;
+        }
+
+        // saving current magnitude
+        x[it_x] =  magnitude;
+        it_x += 1;
+
+        //x = magnitude;
+
+        if (it_x >= x.length)
+        {
+            mFFT.fft(x, y);
+            FFT_magnitude = calculateFFT_absolute(x, y, x.length);
+            //initialize(x.length);
+            this.invalidate();
+            it_x = 0;
+        }
 
     }
 
-    public double[] calculateFFT_absolute (double x[], double y[], int n){
-        double [] absoluteFFT;
+    // calculating absolute magnitude
+    public float[] calculateFFT_absolute(double x[], double y[], int n){
 
-        absoluteFFT = new double[n];
+        float [] absoluteFFT;
+
+        absoluteFFT = new float[n];
+
         for (int i=0; i<n; i++){
 
-            absoluteFFT[i] = Math.sqrt((Math.pow(x[i],2) + Math.pow(y[i],2)));
+            absoluteFFT[i] = (float) Math.sqrt((Math.pow(x[i], 2) + Math.pow(y[i], 2)));
+        }
+
+        if (absoluteFFT == null) {
+            System.out.println("absoluteFFT is null");
         }
 
         return absoluteFFT;
     }
 
     public void initialize (int n){
-        double [] x_initial =  new double[n];
-        double []  y_initial = new double[n];
-        mFFT = new FFT(n);
-        //initial input arrays
-        for (int i = 0; i < n; i++){
-            y_initial[i] = 0;
-            x_initial[i] = 0;
-        }
 
-       x = x_initial;
-       y = y_initial;
+        double [] x_initial =  new double[n];
+        double [] y_initial = new double[n];
+        mFFT = new FFT(n);
+        FFT_magnitude = new float[n];
+
+
+        //initial input arrays
+        Arrays.fill(x_initial, 0);
+        Arrays.fill(y_initial, 0);
+        Arrays.fill(FFT_magnitude, 0);
+
+        x = x_initial;
+        y = y_initial;
+        it_x = 0;
+        System.out.println("initialized");
 
     }
 
-    // Part of class implemented by Ankit Srivastava - <URL>?
-    // pixels = contentHeight
-    // min = minimum value possible (could be negative)
-    // max = maximum value possible (could be negative)
-    // value = to be converted
+    /* Part of class implemented by Ankit Srivastava - <URL>?
+     pixels = contentHeight
+     min = minimum value possible (could be negative)
+     max = maximum value possible (could be negative)
+     value = to be converted */
 
     private int toPixelIntFFT(float pixels, float min, float max, float value) {
         double p;
