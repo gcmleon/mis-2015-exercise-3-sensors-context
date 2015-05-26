@@ -47,9 +47,9 @@ public class FirstActivity extends Activity implements SensorEventListener {
         seekBarRate = (SeekBar) findViewById(R.id.seekBar);
         seekBarFFT_n = (SeekBar) findViewById(R.id.seekBarFFT);
         seekBarRate.setMax(defaultRate);
-        seekBarFFT_n.setMax(defaultRate);
+        seekBarFFT_n.setMax(12);
         seekBarRate.setProgress(defaultRate);
-        seekBarFFT_n.setProgress(32);
+        seekBarFFT_n.setProgress(12);
 
         seekBarRate.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -76,9 +76,9 @@ public class FirstActivity extends Activity implements SensorEventListener {
                 if (progress<5) {
 
                     seekBar.setProgress(5);
-                    n = ((int) Math.pow(2, progress));
+                  //  n = ((int) Math.pow(2, progress));
                 }
-                else { n = ((int) Math.pow(2, progress));}
+                n = ((int) Math.pow(2, progress));
                 System.out.println("FFT window size progress changed to: " + n);
                 FFTView.updateFFT_n(n);
             }
