@@ -22,14 +22,9 @@ public class FirstActivity extends Activity implements SensorEventListener {
     AccelerometerView accelerometerView;
     FFTView fftView;
     SeekBar seekBarRate;
+    SeekBar seekBarFFT_n;
 
 
-    public int userInput= 16; //value set with seekBarFFT
-    private int n = (int) Math.pow(userInput, 2);
-    private double[] y_input = fill_Y_array(n);
-    private double x_input;
-    private double[] magnitudeOverTime;
-    FFT mFFT = new FFT(n);
 
     int defaultRate = 200000; // SENSOR_DELAY_NORMAL
 
@@ -50,14 +45,41 @@ public class FirstActivity extends Activity implements SensorEventListener {
         accelerometerView = (AccelerometerView) findViewById(R.id.accelerometer);
         fftView = (FFTView) findViewById(R.id.fft);
         seekBarRate = (SeekBar) findViewById(R.id.seekBar);
+        seekBarFFT_n = (SeekBar) findViewById(R.id.seekBarFFT);
         seekBarRate.setMax(defaultRate);
+        seekBarFFT_n.setMax(defaultRate);
         seekBarRate.setProgress(defaultRate);
+        seekBarFFT_n.setProgress(32);
 
         seekBarRate.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 System.out.println("SeekBar progress changed to: " + progress);
                 changeSampleRate(progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        seekBarFFT_n.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                int stepSize = 2;
+                int n;
+
+                //http://stackoverflow.com/questions/6431335/android-set-interval-in-seekbar
+                n = ((int)Math.round(progress/stepSize))*stepSize;
+                seekBar.setProgress(progress);
+                System.out.println("FFT window size progress changed to: " + n);
+                FFTView.updateFFT_n(n);
             }
 
             @Override
@@ -101,7 +123,7 @@ public class FirstActivity extends Activity implements SensorEventListener {
     public void onSensorChanged(SensorEvent event) {
 
         Sensor sensor = event.sensor;
-        float x_axis, y_axis, z_axis;
+        float x_axis, y_axis, z_axis, magnitude;
 
         // http://developer.android.com/reference/android/hardware/SensorEvent.html#values
         if (sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
@@ -110,10 +132,11 @@ public class FirstActivity extends Activity implements SensorEventListener {
             x_axis = event.values[0]; // (all including gravity)
             y_axis = event.values[1];
             z_axis = event.values[2];
+            magnitude = sqrt(x_axis * x_axis + y_axis * y_axis + z_axis * z_axis);
             // http://examples.javacodegeeks.com/android/core/hardware/sensor/android-accelerometer-example/#code
             // add to view!
             accelerometerView.updateValues(x_axis, y_axis, z_axis);
-
+            fftView.updateMagnitude(magnitude);
         }
     }
 
@@ -137,12 +160,5 @@ public class FirstActivity extends Activity implements SensorEventListener {
         mySensorManager.registerListener(this, accelerometer, microseconds);
     }
 
-    public double[] fill_Y_array (int n){
-        double[] y_input;
-        y_input = new double[n];
-        for (int i = 0; i < n; i++){
-            y_input[i] = 0;
-        }
-        return y_input;
-    }
+
 }

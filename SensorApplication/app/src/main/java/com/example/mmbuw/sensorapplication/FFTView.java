@@ -23,19 +23,24 @@ public class FFTView extends LinearLayout {
     private Paint paint;
     private int mColor = Color.WHITE;
 
-//FFT variables
-    private float magnitude, prev_magnitude;
-
+    private static double[] magnitudeOverTime;
+    private float magnitude, current_magnitude;
+    private int counter = 0;
 
 
 
     public FFTView(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+
+        // holds max number n^2 current of magnitude values
+        magnitudeOverTime = new double[240];
+
         int x = 20;
         int y = 20;
         int width = 150;
         int height = 25;
-
+        paint = new Paint();
         mExampleDrawable = new ShapeDrawable(new OvalShape());
         mExampleDrawable.setColorFilter(mColor, PorterDuff.Mode.DARKEN);
         mExampleDrawable.setBounds(x, y, x + width, y + height);
@@ -69,20 +74,44 @@ public class FFTView extends LinearLayout {
     }
 
 
-    public void updateMagnitude(float magnitude, int n) {
 
+    protected void refreshMagnitudeArr (float magnitude) {
+
+      current_magnitude = magnitude;
+        if (counter < 240) {
+            counter ++;
+            magnitudeOverTime[counter]= current_magnitude;
+        }
+        else{
+            counter = 0;
+        }
+    }
+
+
+    public static void updateFFT_n(int progress) {
+
+
+        int n =  (int) Math.pow(progress, 2);
+        System.out.print("FFT --->" +n);
+
+        FFT mFFT = new FFT(n);
+
+        double[] x_input, y_input;
+
+        x_input = new double [n];
+        y_input = new double[n];
+        for (int i = 0; i < n; i++){
+            y_input[i] = 0;
+            x_input[i] = magnitudeOverTime[i]; //x_input either copy or sunset of magnitudeOverTimes
+        }
+
+        mFFT.fft(x_input,y_input);
+    }
+
+
+    public void updateMagnitude(float magnitude) {
         this.magnitude = magnitude;
-
-        setPrev_magnitude(magnitude);
-
-
-
+        refreshMagnitudeArr(magnitude);
 
     }
-
-    protected void setPrev_magnitude(float magnitude) {
-      prev_magnitude = magnitude;
-    }
-
-
 }
