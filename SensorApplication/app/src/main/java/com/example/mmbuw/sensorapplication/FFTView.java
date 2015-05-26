@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
  */
 public class FFTView extends LinearLayout {
 
+
     private Drawable mExampleDrawable;
     private Paint paint;
     private int mColor = Color.WHITE;
@@ -93,10 +94,11 @@ public class FFTView extends LinearLayout {
 
        // int n =  (int) Math.pow(progress, 2);
         int n = progress;
+        double[] FFTmagnitude;
         System.out.print("FFT --->" +n);
 
         FFT mFFT = new FFT(n);
-
+        FFTmagnitude = new double[n];
         double[] x_input, y_input;
 
         x_input = new double [n];
@@ -107,6 +109,8 @@ public class FFTView extends LinearLayout {
         }
 
         mFFT.fft(x_input,y_input);
+       // FFTmagnitude = calculateFFT_absolute(x_input, y_input,n);
+
     }
 
 
@@ -114,5 +118,17 @@ public class FFTView extends LinearLayout {
         this.magnitude = magnitude;
         refreshMagnitudeArr(magnitude);
 
+    }
+
+    public double[] calculateFFT_absolute (double x[], double y[], int n){
+        double [] absoluteFFT;
+
+        absoluteFFT = new double[n];
+        for (int i=0; i<n; i++){
+
+            absoluteFFT[i] = Math.sqrt((Math.pow(x[i],2) + Math.pow(y[i],2)));
+        }
+
+        return absoluteFFT;
     }
 }
