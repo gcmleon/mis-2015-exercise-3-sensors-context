@@ -1,6 +1,0 @@
-<resources>
-    <string name="app_name">HelloSensors</string>
-
-    <string name="hello_sensors">Hello Sensors!</string>
-    <string name="action_settings">Settings</string>
-</resources>

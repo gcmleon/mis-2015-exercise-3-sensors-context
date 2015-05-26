@@ -1,8 +1,0 @@
-<resources>
-    <declare-styleable name="FFTView">
-        <attr name="exampleStringFFT" format="string" />
-        <attr name="exampleDimensionFFT" format="dimension" />
-        <attr name="exampleColorFFT" format="color" />
-        <attr name="exampleDrawableFFT" format="color|reference" />
-    </declare-styleable>
-</resources>
