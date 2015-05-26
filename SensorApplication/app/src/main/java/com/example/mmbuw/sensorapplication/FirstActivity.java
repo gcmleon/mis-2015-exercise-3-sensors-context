@@ -72,12 +72,13 @@ public class FirstActivity extends Activity implements SensorEventListener {
         seekBarFFT_n.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                int stepSize = 2;
                 int n;
+                if (progress<5) {
 
-                //http://stackoverflow.com/questions/6431335/android-set-interval-in-seekbar
-                n = ((int)Math.round(progress/stepSize))*stepSize;
-                seekBar.setProgress(progress);
+                    seekBar.setProgress(5);
+                    n = ((int) Math.pow(2, progress));
+                }
+                else { n = ((int) Math.pow(2, progress));}
                 System.out.println("FFT window size progress changed to: " + n);
                 FFTView.updateFFT_n(n);
             }

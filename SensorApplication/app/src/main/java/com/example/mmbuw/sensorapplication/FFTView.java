@@ -34,7 +34,7 @@ public class FFTView extends LinearLayout {
 
 
         // holds max number n^2 current of magnitude values
-        magnitudeOverTime = new double[240];
+        magnitudeOverTime = new double[1024];
 
         int x = 20;
         int y = 20;
@@ -91,7 +91,8 @@ public class FFTView extends LinearLayout {
     public static void updateFFT_n(int progress) {
 
 
-        int n =  (int) Math.pow(progress, 2);
+       // int n =  (int) Math.pow(progress, 2);
+        int n = progress;
         System.out.print("FFT --->" +n);
 
         FFT mFFT = new FFT(n);
